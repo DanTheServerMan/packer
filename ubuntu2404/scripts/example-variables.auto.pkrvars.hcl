@@ -5,11 +5,11 @@ pmx_user                 = "terraform@pve!apitoken"
 pmx_url                  = "https://192.168.1.101:8006/api2/json"
 
 # VM ISO Information
-iso_location             = "nfs-iso:iso/AlmaLinux-9.5-x86_64-boot.iso"
+iso_location             = "nfs-iso:iso/ubuntu-24.04.02-live-server-amd64.iso"
 iso_http_directory       = "../bootstrap/"
 
 # VM Hardware Information
-vm_name                  = "packer-alma9-template"
+vm_name                  = "packer-ubuntu2404-template"
 vm_cpu_type              = "host"
 vm_core                  = 4
 vm_mem                   = 2048
