@@ -1,0 +1,160 @@
+#cloud-config
+
+# -------------------------------------------------------------------
+# Identity and Basic System Configuration
+# -------------------------------------------------------------------
+autoinstall:
+  version: 1
+  source:
+    id: ubuntu-server
+
+  identity:
+    hostname: packer-ubuntu2404-template
+    username: dantheserverman
+    password: YOUR SHA512 HASHED PASSWORD HERE
+    
+  locale: en_US.UTF-8
+  timezone: Etc/UTC
+
+# -------------------------------------------------------------------
+# Networking Configuration
+# -------------------------------------------------------------------
+  network:
+    version: 2
+    ethernets:
+      ens18:
+        addresses:
+          - 192.168.1.230/24
+        nameservers:
+          addresses:
+            - 192.168.1.110
+            - 192.168.1.111
+        routes:
+          - to: default
+            via: 192.168.1.254
+
+# -------------------------------------------------------------------
+# User and SSH Access
+# -------------------------------------------------------------------
+  user-data:
+    users:
+      - name: dantheserverman
+        gecos: dantheserverman
+        shell: /bin/bash
+        passwd: YOUR SHA512 HASHED PASSWORD HERE
+        lock_passwd: false
+        groups: [adm, cdrom, dip, lxd, plugdev, sudo]
+  ssh:
+    allow-pw: true
+    authorized-keys:
+      - YOUR SSH KEY HERE
+
+# -------------------------------------------------------------------
+# Packages to Install
+# -------------------------------------------------------------------
+  packages:
+    - open-vm-tools
+    - openssh-server
+    - openssh-client
+    - cron
+    - qemu-guest-agent
+
+# -------------------------------------------------------------------
+# Storage and Partitioning (LVM)
+# -------------------------------------------------------------------
+  storage:
+    config:
+      # Disk layout (GPT)
+      - type: disk
+        id: disk-sda
+        path: /dev/sda
+        ptable: gpt
+        wipe: superblock-recursive
+        preserve: false
+        grub_device: false
+
+      # EFI partition
+      - type: partition
+        id: efi-partition
+        device: disk-sda
+        size: 1G
+        flag: boot
+        number: 1
+        grub_device: true
+        preserve: false
+
+      - type: format
+        id: format-efi-boot
+        fstype: vfat
+        volume: efi-partition
+
+      # /boot partition
+      - type: partition
+        id: partition-boot
+        device: disk-sda
+        size: 1G
+        number: 2
+
+      - type: format
+        id: format-boot
+        fstype: ext4
+        volume: partition-boot
+
+      # LVM partition (remaining space)
+      - type: partition
+        id: partition-lvm
+        device: disk-sda
+        size: -1
+        number: 3
+
+      - type: lvm_volgroup
+        id: vg0
+        name: vg0
+        devices: [partition-lvm]
+
+      # LVM Logical Volumes
+      - type: lvm_partition
+        id: lvm-partition-tmp
+        name: lv-tmp
+        volgroup: vg0
+        size: 1G
+        path: /dev/vg0/lv-tmp
+
+      - type: format
+        id: format-tmp
+        fstype: ext4
+        volume: lvm-partition-tmp
+
+      - type: lvm_partition
+        id: lvm-partition-root
+        name: lv-root
+        volgroup: vg0
+        size: -1
+        path: /dev/vg0/lv-root
+
+      - type: format
+        id: format-root
+        fstype: ext4
+        volume: lvm-partition-root
+
+      # Mounts
+      - type: mount
+        path: /boot/efi
+        device: format-efi-boot
+        id: mount-efi-boot
+
+      - type: mount
+        path: /boot
+        device: format-boot
+        id: mount-boot
+
+      - type: mount
+        path: /tmp
+        device: format-tmp
+        id: mount-tmp
+        options: noexec,nosuid,nodev
+
+      - type: mount
+        path: /
+        device: format-root
+        id: mount-root
