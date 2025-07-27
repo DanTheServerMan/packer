@@ -41,6 +41,7 @@ autoinstall:
       - name: dantheserverman
         gecos: dantheserverman
         shell: /bin/bash
+        sudo: ALL=(ALL) NOPASSWD:ALL
         passwd: YOUR SHA512 HASHED PASSWORD HERE
         lock_passwd: false
         groups: [adm, cdrom, dip, lxd, plugdev, sudo]

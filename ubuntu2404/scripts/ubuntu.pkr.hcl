@@ -67,4 +67,10 @@ source "proxmox-iso" "ubuntu-cloudinit" {
 
 build {
   sources = ["source.proxmox-iso.ubuntu-cloudinit"]
+  
+  provisioner "shell" {
+    script_upload_path = "/var/tmp/packer-scripts"
+    inline = [
+      "sudo cloud-init clean"
+    ]
 }

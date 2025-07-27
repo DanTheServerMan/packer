@@ -30,4 +30,3 @@ vm_template_description  = "Created by Packer"
 vm_ssh_user              = "dantheserverman"
 vm_ssh_private_key_file  = "pubkey"
 vm_ssh_timeout           = "30m"
-
