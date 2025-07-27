@@ -5,7 +5,7 @@ pmx_user                 = "terraform@pve!apitoken"
 pmx_url                  = "https://192.168.1.101:8006/api2/json"
 
 # VM ISO Information
-iso_location             = "nfs-iso:iso/ubuntu-24.04.02-live-server-amd64.iso"
+iso_location             = "nfs-iso:iso/ubuntu-24.04.2-live-server-amd64.iso"
 iso_http_directory       = "../bootstrap/"
 
 # VM Hardware Information
@@ -28,5 +28,5 @@ vm_template_description  = "Created by Packer"
 
 # VM SSH Information
 vm_ssh_user              = "dantheserverman"
-vm_ssh_private_key_file  = "pubkey"
+vm_ssh_private_key_file  = "~/.ssh/pubkey"
 vm_ssh_timeout           = "30m"
