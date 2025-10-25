@@ -28,5 +28,5 @@ vm_template_description  = "Created by Packer"
 
 # VM SSH Information
 vm_ssh_user              = "dantheserverman"
-vm_ssh_private_key_file  = "~/.ssh/pubkey"
+vm_ssh_private_key_file  = "~/.ssh/privkey"
 vm_ssh_timeout           = "30m"

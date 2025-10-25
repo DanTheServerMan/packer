@@ -73,4 +73,5 @@ build {
     inline = [
       "sudo cloud-init clean"
     ]
+  }
 }

@@ -54,8 +54,7 @@ autoinstall:
 # Packages to Install
 # -------------------------------------------------------------------
   packages:
-    - openssh-server
-    - openssh-client
+    - ssh
     - cron
     - qemu-guest-agent
 
