@@ -1,0 +1,43 @@
+name: Build Proxmox Template with Packer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  packer:
+    runs-on: self-hosted  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Packer
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget unzip
+          PACKER_VERSION=1.11.2
+          wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
+          sudo unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /usr/local/bin
+          packer version
+ 
+      - name: Validate Packer configuration
+        run: packer validate -var-file=vars.auto.pkrvars.hcl ubuntu.pkr.hcl
+
+      - name: Build Proxmox template
+        env:
+          PACKER_LOG: 1
+          PACKER_LOG_PATH: packer.log
+          PKR_VAR_pve_token_id: ${{ secrets.PVE_TOKEN_ID }}
+          PKR_VAR_pve_token_secret: ${{ secrets.PVE_TOKEN_SECRET }}
+        run: |
+          packer init .
+          packer build -var-file=vars.auto.pkrvars.hcl ubuntu.pkr.hcl
+
+      - name: Upload Packer log (for troubleshooting)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packer-log
+          path: packer.log
+
